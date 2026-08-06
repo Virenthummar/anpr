@@ -79,14 +79,19 @@ def extract_indian_plates_from_text(raw_text):
             found.append(formatted)
     return found
 
-def process_image(image_path, output_path=None, min_confidence=0.05):
+from frame_enhancer import enhance_frame
+
+def process_image(image_path, output_path=None, min_confidence=0.05, log_qa=False):
     detector = load_plate_detector()
     reader = load_ocr_reader()
 
-    frame = cv2.imread(image_path)
-    if frame is None:
+    raw_frame = cv2.imread(image_path)
+    if raw_frame is None:
         print(f"Error: Could not read image at {image_path}")
         return
+
+    # Pass frame through pre-processing & enhancement engine
+    frame = enhance_frame(raw_frame, log_qa=log_qa, save_name=os.path.basename(image_path))
 
     height, width = frame.shape[:2]
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
