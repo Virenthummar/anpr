@@ -132,6 +132,26 @@ def is_contained_or_overlapping(box_person, box_vehicle, threshold=0.3):
     return overlap_ratio >= threshold
 
 
+from frame_enhancer import enhance_frame
+
+def save_enhanced_evidence(crop, evidence_path, min_size=400):
+    """Upscales small crops with cubic interpolation, applies CLAHE contrast & sharpening for crystal clarity"""
+    if crop is None or crop.size == 0:
+        return
+
+    h, w = crop.shape[:2]
+    if w < min_size or h < min_size:
+        scale = max(min_size / float(w), min_size / float(h))
+        crop = cv2.resize(crop, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_CUBIC)
+
+    enhanced = enhance_frame(crop, log_qa=False)
+
+    # Apply unsharp mask sharpening
+    gaussian = cv2.GaussianBlur(enhanced, (0, 0), 2.0)
+    crisp = cv2.addWeighted(enhanced, 1.6, gaussian, -0.6, 0)
+
+    cv2.imwrite(evidence_path, crisp)
+
 class TrafficViolationDetector:
     """Integrated Violation Detector Engine (Helmet, Triple-Riding, Seatbelt)"""
     def __init__(self, evidence_dir="evidences", helmet_model_path=None, seatbelt_model_path=None):
@@ -198,8 +218,7 @@ class TrafficViolationDetector:
                 crop_x2 = min(w, max(mx2, max([p[2] for p in riders])))
                 
                 evidence_crop = frame[crop_y1:crop_y2, crop_x1:crop_x2]
-                if evidence_crop.size > 0:
-                    cv2.imwrite(evidence_path, evidence_crop)
+                save_enhanced_evidence(evidence_crop, evidence_path)
 
                 violations.append({
                     "violation_type": "TRIPLE_RIDING",
@@ -221,8 +240,7 @@ class TrafficViolationDetector:
                 if res == "NO_HELMET":
                     evidence_filename = f"{vehicle_id}_RIDER_{idx+1}_NO_HELMET.jpg"
                     evidence_path = os.path.join(self.evidence_dir, evidence_filename)
-                    if head_crop.size > 0:
-                        cv2.imwrite(evidence_path, head_crop)
+                    save_enhanced_evidence(head_crop, evidence_path)
 
                     violations.append({
                         "violation_type": "NO_HELMET",
@@ -266,8 +284,7 @@ class TrafficViolationDetector:
             if res == "NO_SEATBELT":
                 evidence_filename = f"{vehicle_id}_NO_SEATBELT.jpg"
                 evidence_path = os.path.join(self.evidence_dir, evidence_filename)
-                if windshield_crop.size > 0:
-                    cv2.imwrite(evidence_path, windshield_crop)
+                save_enhanced_evidence(windshield_crop, evidence_path)
 
                 violations.append({
                     "violation_type": "NO_SEATBELT",
