@@ -1,0 +1,21 @@
+{
+  "filename": "013_11_jpeg.rf.b474455049562dcf54debbbd4cd33027.jpg",
+  "number_plate_visible": "MH 12CM 5851 (Maharashtra RTO plate mounted above front mudguard)",
+  "vehicle_details": "TVS Motorcycle / Two-Wheeler",
+  "total_offenses": 3,
+  "offenses": [
+    {
+      "name": "NO_HELMET",
+      "desc": "An Indian commuter riding a motorcycle wearing a cloth face covering instead of a helmet (Motor Vehicles Act Sec 129)."
+    },
+    {
+      "name": "TRIPLE_RIDING",
+      "desc": "Multiple riders (4) riding on a single two-wheeler."
+    },
+    {
+      "name": "REGISTRATION_NOT_FOUND",
+      "desc": "Plate 'MH12CM5851' is not registered in official RTO Database (Potential Fake / Cloned Plate)."
+    }
+  ],
+  "evidence_dir": "crime_audit_results\\evidences"
+}
