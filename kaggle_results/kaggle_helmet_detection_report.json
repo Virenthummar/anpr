@@ -1,0 +1,315 @@
+[
+  {
+    "image_filename": "013_107_jpeg.rf.67e4ab700429b1c3793809d8458d0dd6.jpg",
+    "saved_result_image": "C:\\Users\\Viren\\anpr_project\\kaggle_results\\detected_013_107_jpeg.rf.67e4ab700429b1c3793809d8458d0dd6.jpg",
+    "detected_vehicles": 1,
+    "report": [
+      {
+        "vehicle_id": "VEH_2W_001",
+        "vehicle_type": "two_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          7,
+          233,
+          638,
+          640
+        ],
+        "violations": [
+          {
+            "violation_type": "TRIPLE_RIDING",
+            "rider_count": 3,
+            "confidence": 0.92,
+            "evidence_image_path": "C:\\Users\\Viren\\anpr_project\\kaggle_results\\evidences\\VEH_2W_001_TRIPLE_RIDING.jpg"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "image_filename": "013_10_jpeg.rf.89e0e027f1c8e1c4607d526912f6b9b8.jpg",
+    "saved_result_image": "C:\\Users\\Viren\\anpr_project\\kaggle_results\\detected_013_10_jpeg.rf.89e0e027f1c8e1c4607d526912f6b9b8.jpg",
+    "detected_vehicles": 7,
+    "report": [
+      {
+        "vehicle_id": "VEH_2W_001",
+        "vehicle_type": "two_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          122,
+          294,
+          425,
+          575
+        ],
+        "violations": [
+          {
+            "violation_type": "TRIPLE_RIDING",
+            "rider_count": 3,
+            "confidence": 0.92,
+            "evidence_image_path": "C:\\Users\\Viren\\anpr_project\\kaggle_results\\evidences\\VEH_2W_001_TRIPLE_RIDING.jpg"
+          }
+        ]
+      },
+      {
+        "vehicle_id": "VEH_2W_002",
+        "vehicle_type": "two_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          394,
+          165,
+          435,
+          215
+        ],
+        "violations": []
+      },
+      {
+        "vehicle_id": "VEH_2W_003",
+        "vehicle_type": "two_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          452,
+          157,
+          499,
+          211
+        ],
+        "violations": []
+      },
+      {
+        "vehicle_id": "VEH_2W_004",
+        "vehicle_type": "two_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          526,
+          155,
+          565,
+          210
+        ],
+        "violations": []
+      },
+      {
+        "vehicle_id": "VEH_2W_005",
+        "vehicle_type": "two_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          618,
+          142,
+          639,
+          181
+        ],
+        "violations": []
+      },
+      {
+        "vehicle_id": "VEH_4W_006",
+        "vehicle_type": "four_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          342,
+          136,
+          391,
+          176
+        ],
+        "violations": [
+          {
+            "violation_type": "NO_SEATBELT",
+            "confidence": 0.76,
+            "evidence_image_path": "C:\\Users\\Viren\\anpr_project\\kaggle_results\\evidences\\VEH_4W_006_NO_SEATBELT.jpg"
+          }
+        ]
+      },
+      {
+        "vehicle_id": "VEH_4W_007",
+        "vehicle_type": "four_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          565,
+          116,
+          610,
+          161
+        ],
+        "violations": [
+          {
+            "violation_type": "NO_SEATBELT",
+            "confidence": 0.76,
+            "evidence_image_path": "C:\\Users\\Viren\\anpr_project\\kaggle_results\\evidences\\VEH_4W_007_NO_SEATBELT.jpg"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "image_filename": "013_110_jpeg.rf.4367b3a40bdcd62436f566d11edd85a6.jpg",
+    "saved_result_image": "C:\\Users\\Viren\\anpr_project\\kaggle_results\\detected_013_110_jpeg.rf.4367b3a40bdcd62436f566d11edd85a6.jpg",
+    "detected_vehicles": 1,
+    "report": [
+      {
+        "vehicle_id": "VEH_4W_001",
+        "vehicle_type": "four_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          529,
+          167,
+          639,
+          251
+        ],
+        "violations": [
+          {
+            "violation_type": "NO_SEATBELT",
+            "confidence": 0.76,
+            "evidence_image_path": "C:\\Users\\Viren\\anpr_project\\kaggle_results\\evidences\\VEH_4W_001_NO_SEATBELT.jpg"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "image_filename": "013_119_jpeg.rf.da057f7bb46ce31d38a2a8278e75bf16.jpg",
+    "saved_result_image": "C:\\Users\\Viren\\anpr_project\\kaggle_results\\detected_013_119_jpeg.rf.da057f7bb46ce31d38a2a8278e75bf16.jpg",
+    "detected_vehicles": 4,
+    "report": [
+      {
+        "vehicle_id": "VEH_2W_001",
+        "vehicle_type": "two_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          450,
+          153,
+          551,
+          534
+        ],
+        "violations": []
+      },
+      {
+        "vehicle_id": "VEH_4W_002",
+        "vehicle_type": "four_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          583,
+          70,
+          639,
+          185
+        ],
+        "violations": [
+          {
+            "violation_type": "NO_SEATBELT",
+            "confidence": 0.76,
+            "evidence_image_path": "C:\\Users\\Viren\\anpr_project\\kaggle_results\\evidences\\VEH_4W_002_NO_SEATBELT.jpg"
+          }
+        ]
+      },
+      {
+        "vehicle_id": "VEH_4W_003",
+        "vehicle_type": "four_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          621,
+          110,
+          639,
+          204
+        ],
+        "violations": [
+          {
+            "violation_type": "NO_SEATBELT",
+            "confidence": 0.76,
+            "evidence_image_path": "C:\\Users\\Viren\\anpr_project\\kaggle_results\\evidences\\VEH_4W_003_NO_SEATBELT.jpg"
+          }
+        ]
+      },
+      {
+        "vehicle_id": "VEH_4W_004",
+        "vehicle_type": "four_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          421,
+          0,
+          589,
+          256
+        ],
+        "violations": []
+      }
+    ]
+  },
+  {
+    "image_filename": "013_11_jpeg.rf.b474455049562dcf54debbbd4cd33027.jpg",
+    "saved_result_image": "C:\\Users\\Viren\\anpr_project\\kaggle_results\\detected_013_11_jpeg.rf.b474455049562dcf54debbbd4cd33027.jpg",
+    "detected_vehicles": 6,
+    "report": [
+      {
+        "vehicle_id": "VEH_2W_001",
+        "vehicle_type": "two_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          76,
+          295,
+          278,
+          556
+        ],
+        "violations": []
+      },
+      {
+        "vehicle_id": "VEH_2W_002",
+        "vehicle_type": "two_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          363,
+          283,
+          492,
+          572
+        ],
+        "violations": []
+      },
+      {
+        "vehicle_id": "VEH_2W_003",
+        "vehicle_type": "two_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          536,
+          275,
+          610,
+          396
+        ],
+        "violations": []
+      },
+      {
+        "vehicle_id": "VEH_2W_004",
+        "vehicle_type": "two_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          478,
+          303,
+          537,
+          447
+        ],
+        "violations": []
+      },
+      {
+        "vehicle_id": "VEH_2W_005",
+        "vehicle_type": "two_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          326,
+          296,
+          385,
+          401
+        ],
+        "violations": []
+      },
+      {
+        "vehicle_id": "VEH_4W_006",
+        "vehicle_type": "four_wheeler",
+        "plate_number": "UNKNOWN",
+        "bbox": [
+          0,
+          263,
+          88,
+          323
+        ],
+        "violations": [
+          {
+            "violation_type": "NO_SEATBELT",
+            "confidence": 0.76,
+            "evidence_image_path": "C:\\Users\\Viren\\anpr_project\\kaggle_results\\evidences\\VEH_4W_006_NO_SEATBELT.jpg"
+          }
+        ]
+      }
+    ]
+  }
+]
