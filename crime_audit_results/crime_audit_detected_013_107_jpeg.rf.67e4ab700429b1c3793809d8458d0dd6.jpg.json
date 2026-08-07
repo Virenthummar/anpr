@@ -1,0 +1,53 @@
+{
+  "audit_id": "AUDIT_detected",
+  "image_file": "detected_013_107_jpeg.rf.67e4ab700429b1c3793809d8458d0dd6.jpg",
+  "anpr_detected_plate": "YIM4EE53P",
+  "plate_format_valid": false,
+  "total_offenses_detected": 5,
+  "offenses_list": [
+    {
+      "offense_category": "TRAFFIC_VIOLATION",
+      "offense_name": "TRIPLE_RIDING",
+      "confidence": 0.92,
+      "evidence_image": "crime_audit_results\\evidences\\VEH_2W_001_TRIPLE_RIDING.jpg"
+    },
+    {
+      "offense_category": "TRAFFIC_VIOLATION",
+      "offense_name": "NO_HELMET",
+      "confidence": 0.78,
+      "evidence_image": "crime_audit_results\\evidences\\VEH_2W_001_RIDER_1_NO_HELMET.jpg"
+    },
+    {
+      "offense_category": "TRAFFIC_VIOLATION",
+      "offense_name": "NO_HELMET",
+      "confidence": 0.78,
+      "evidence_image": "crime_audit_results\\evidences\\VEH_2W_001_RIDER_2_NO_HELMET.jpg"
+    },
+    {
+      "offense_category": "TRAFFIC_VIOLATION",
+      "offense_name": "NO_HELMET",
+      "confidence": 0.78,
+      "evidence_image": "crime_audit_results\\evidences\\VEH_2W_001_RIDER_3_NO_HELMET.jpg"
+    },
+    {
+      "offense_category": "REGISTRATION_OFFENSE",
+      "offense_name": "REGISTRATION_NOT_FOUND (Plate number 'YIM4EE53P' is not registered in database (Potential Fake / Cloned Plate).)",
+      "confidence": 0.95,
+      "evidence_image": "N/A"
+    }
+  ],
+  "registration_verification": {
+    "plate_number": "YIM4EE53P",
+    "status": "NOT_FOUND",
+    "overall_confidence": 0.95,
+    "flagged_for_human_review": true,
+    "reason": "Plate number 'YIM4EE53P' is not registered in database (Potential Fake / Cloned Plate).",
+    "detected_visual_attributes": {
+      "predicted_color": "Grey",
+      "predicted_body_type": "Two-Wheeler"
+    },
+    "registered_info": null,
+    "mismatches": []
+  },
+  "blacklist_match": null
+}
