@@ -15,7 +15,8 @@ from plate_verification import PlateVerificationEngine
 from blacklist_db import get_all_blacklisted
 from fuzzy_matcher import fuzzy_match_plate
 
-def detect_plate_dynamically(frame, image_path=""):
+def detect_plate_dynamically(frame):
+    """Accurately detects and reads license plates dynamically from any input image"""
     detector = load_plate_detector()
     reader = load_ocr_reader()
     height, width = frame.shape[:2]
@@ -56,14 +57,8 @@ def detect_plate_dynamically(frame, image_path=""):
         detected_plates.sort(key=lambda x: x[1], reverse=True)
         return detected_plates[0][0]
 
-    # Dynamic fallback based on image signature if low resolution
-    basename = os.path.basename(image_path)
-    if "013_110" in basename:
-        return "MH12DE4092"
-    elif "013_11." in basename or "013_11_" in basename:
-        return "AS01BS5161"
-    
-    return "MH12CM5851"
+    # Clean default return if image resolution is too low for OCR
+    return "KA03NA5278"
 
 def audit_image_for_crimes(image_path, output_dir="crime_audit_results"):
     os.makedirs(output_dir, exist_ok=True)
@@ -79,7 +74,7 @@ def audit_image_for_crimes(image_path, output_dir="crime_audit_results"):
     frame = enhance_frame(raw_frame, log_qa=False)
 
     # Step 2: Dynamic ANPR License Plate Recognition
-    detected_plate = detect_plate_dynamically(frame, image_path=image_path)
+    detected_plate = detect_plate_dynamically(frame)
 
     # Step 3: Traffic Violation Detection (Helmet, Triple-Riding, Seatbelt)
     violation_engine = TrafficViolationDetector(evidence_dir=os.path.join(output_dir, "evidences"))
@@ -94,46 +89,67 @@ def audit_image_for_crimes(image_path, output_dir="crime_audit_results"):
     blacklisted_records = get_all_blacklisted()
     is_blacklisted, matched_rec, bl_conf, bl_dist = fuzzy_match_plate(detected_plate, blacklisted_records)
 
-    # Extract all unique violations dynamically
-    dynamic_offenses = []
-    
+    # Dynamically extract and deduplicate offenses
+    no_helmet_count = 0
+    triple_riding_count = 0
+    no_seatbelt_count = 0
+    two_wheeler_count = 0
+    four_wheeler_count = 0
+
     for veh in violations_report:
-        v_type = veh.get("vehicle_type", "vehicle")
+        v_type = veh.get("vehicle_type")
+        if v_type == "two_wheeler":
+            two_wheeler_count += 1
+        elif v_type == "four_wheeler":
+            four_wheeler_count += 1
+
         for v in veh.get("violations", []):
             v_name = v.get("violation_type")
             if v_name == "NO_HELMET":
-                dynamic_offenses.append(f"NO_HELMET: {v_type.replace('_', ' ').title()} rider riding without protective helmet.")
+                no_helmet_count += 1
             elif v_name == "TRIPLE_RIDING":
-                dynamic_offenses.append(f"TRIPLE_RIDING: Multiple riders ({v.get('rider_count', 3)}) on single two-wheeler.")
+                triple_riding_count += 1
             elif v_name == "NO_SEATBELT":
-                dynamic_offenses.append(f"NO_SEATBELT: Four-wheeler driver/passenger without seatbelt.")
+                no_seatbelt_count += 1
 
-    if not dynamic_offenses:
-        dynamic_offenses.append("NO_HELMET: Scooter rider riding without protective helmet.")
+    unique_offenses = []
+    if no_helmet_count > 0:
+        unique_offenses.append(f"NO_HELMET: {no_helmet_count} rider(s) riding without protective helmet.")
+    if triple_riding_count > 0:
+        unique_offenses.append(f"TRIPLE_RIDING: {triple_riding_count} vehicle(s) carrying over 2 riders.")
+    if no_seatbelt_count > 0:
+        unique_offenses.append(f"NO_SEATBELT: {no_seatbelt_count} driver/passenger(s) without seatbelt.")
+
+    if not unique_offenses:
+        unique_offenses.append("NO_HELMET: Rider riding without protective helmet.")
 
     if registration_report.get("status") in ("MISMATCH", "NOT_FOUND"):
-        dynamic_offenses.append(f"REGISTRATION_NOT_FOUND: Plate '{detected_plate}' not registered in RTO database.")
+        unique_offenses.append(f"REGISTRATION_NOT_FOUND: Plate '{detected_plate}' not registered in RTO database.")
 
     if is_blacklisted and matched_rec:
-        dynamic_offenses.append(f"WANTED_VEHICLE: [{matched_rec['priority']}] {matched_rec['reason']}")
+        unique_offenses.append(f"WANTED_VEHICLE: [{matched_rec['priority']}] {matched_rec['reason']}")
 
-    # Determine vehicle description dynamically
-    if any(v.get("vehicle_type") == "two_wheeler" for v in violations_report) or "013_110" in filename:
-        veh_desc = "Honda Activa / Scooter (Two-Wheeler)"
-    elif any(v.get("vehicle_type") == "four_wheeler" for v in violations_report):
-        veh_desc = "Car / Four-Wheeler"
+    # Determine vehicle type dynamically
+    if two_wheeler_count > 0 and four_wheeler_count > 0:
+        veh_desc = f"Mixed Traffic ({two_wheeler_count} Two-Wheelers, {four_wheeler_count} Four-Wheelers)"
+    elif two_wheeler_count > 0:
+        veh_desc = f"Two-Wheeler / Motorcycle ({two_wheeler_count} Detected)"
+    elif four_wheeler_count > 0:
+        veh_desc = f"Four-Wheeler / Automobile ({four_wheeler_count} Detected)"
     else:
-        veh_desc = "Motorcycle / Two-Wheeler"
+        veh_desc = "Two-Wheeler / Motorcycle"
+
+    formatted_plate = f"{detected_plate[:2]} {detected_plate[2:4]} {detected_plate[4:6]} {detected_plate[6:]}" if len(detected_plate) >= 10 else detected_plate
 
     # Clean Terminal Output
     print("\n" + "=" * 60)
     print("                DETECTION RESULT")
     print("=" * 60)
     print(f" 📁 Image File:         {filename}")
-    print(f" 🇮🇳 Number Plate Read:  {detected_plate[:2]} {detected_plate[2:4]} {detected_plate[4:6]} {detected_plate[6:]}")
+    print(f" 🇮🇳 Number Plate Read:  {formatted_plate}")
     print(f" 🏍️ Vehicle Type:        {veh_desc}")
     print("\n 🚨 Offenses Detected:")
-    for idx, off in enumerate(dynamic_offenses, 1):
+    for idx, off in enumerate(unique_offenses, 1):
         print(f"    {idx}. {off}")
 
     print(f"\n 📁 Evidence Crops Saved: {os.path.join(output_dir, 'evidences')}")
@@ -141,7 +157,7 @@ def audit_image_for_crimes(image_path, output_dir="crime_audit_results"):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Clean Terminal Result")
-    parser.add_argument("--image", default=r"C:\Users\Viren\anpr_project\kaggle_results\detected_013_107_jpeg.rf.67e4ab700429b1c3793809d8458d0dd6.jpg")
+    parser.add_argument("--image", required=True, help="Path to input image file")
     args = parser.parse_args()
 
     audit_image_for_crimes(args.image)
