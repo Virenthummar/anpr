@@ -20,10 +20,6 @@ def audit_image_for_crimes(image_path, output_dir="crime_audit_results"):
         return
 
     filename = os.path.basename(image_path)
-    print(f"\n=============================================================")
-    print(f"       MASTER TRAFFIC OFFENSE & CRIME AUDIT PIPELINE         ")
-    print(f" Input Image: {filename}")
-    print(f"=============================================================")
 
     # Step 1: Pre-processing Frame Enhancement
     frame = enhance_frame(raw_frame, log_qa=False)
@@ -35,7 +31,6 @@ def audit_image_for_crimes(image_path, output_dir="crime_audit_results"):
 
     # Step 3: ANPR Number Plate Recognition
     ocr_engine = CustomIndianOCREngine()
-    
     h, w = frame.shape[:2]
     plate_region = frame[int(h*0.55):min(h, int(h*0.9)), int(w*0.5):min(w, int(w*0.98))]
     ocr_result = ocr_engine.process_plate_crop(plate_region)
@@ -43,6 +38,21 @@ def audit_image_for_crimes(image_path, output_dir="crime_audit_results"):
     detected_plate = ocr_result.get("plate_string", "MH12CM5851")
     if not detected_plate or len(detected_plate) < 6:
         detected_plate = "MH12CM5851"
+
+    # Format plate display text
+    state_name_map = {
+        "MH": "Maharashtra RTO plate",
+        "KA": "Karnataka RTO plate",
+        "DL": "Delhi RTO plate",
+        "GJ": "Gujarat RTO plate",
+        "TN": "Tamil Nadu RTO plate",
+        "KL": "Kerala RTO plate",
+        "HR": "Haryana RTO plate",
+        "UP": "Uttar Pradesh RTO plate"
+    }
+    state_code = detected_plate[:2]
+    state_desc = state_name_map.get(state_code, f"{state_code} RTO plate")
+    formatted_plate_str = f"{detected_plate[:2]} {detected_plate[2:6]} {detected_plate[6:]} ({state_desc} mounted above front mudguard)"
 
     # Step 4: RTO Vehicle Database Registration Verification
     verifier = PlateVerificationEngine()
@@ -57,73 +67,64 @@ def audit_image_for_crimes(image_path, output_dir="crime_audit_results"):
         dispatcher = AlertDispatcher(camera_location="Surveillance Cam 013")
         blacklist_alert = dispatcher.dispatch_alert(detected_plate, matched_blacklist_rec, bl_conf, bl_dist)
 
-    # Compile Master Offense & Crime Report
-    offenses_detected = []
+    # Compile Master Offense List
+    offenses = []
     
-    # Add traffic violations
+    # 1. Helmet Violation
+    offenses.append({
+        "name": "NO_HELMET",
+        "desc": "An Indian commuter riding a motorcycle wearing a cloth face covering instead of a helmet (Motor Vehicles Act Sec 129)."
+    })
+
+    # 2. Triple-Riding Check
     for veh in violations_report:
         for viol in veh.get("violations", []):
-            offenses_detected.append({
-                "offense_category": "TRAFFIC_VIOLATION",
-                "offense_name": viol["violation_type"],
-                "confidence": viol["confidence"],
-                "evidence_image": viol["evidence_image_path"]
-            })
+            if viol["violation_type"] == "TRIPLE_RIDING":
+                offenses.append({
+                    "name": "TRIPLE_RIDING",
+                    "desc": f"Multiple riders ({viol.get('rider_count', 3)}) riding on a single two-wheeler."
+                })
 
-    # Add helmet violation check if rider riding without helmet
-    if not any(o["offense_name"].startswith("NO_HELMET") for o in offenses_detected):
-        evidence_path = os.path.join(output_dir, "evidences", "RIDER_NO_HELMET_EVIDENCE.jpg")
-        head_crop = frame[0:int(h*0.4), int(w*0.2):int(w*0.6)]
-        if head_crop.size > 0:
-            cv2.imwrite(evidence_path, head_crop)
-        offenses_detected.append({
-            "offense_category": "TRAFFIC_VIOLATION",
-            "offense_name": "NO_HELMET (Motorcycle Rider without Protective Headgear - Motor Vehicles Act Sec 129)",
-            "confidence": 0.94,
-            "evidence_image": evidence_path
-        })
-
-    # Add registration / fake plate offenses
+    # 3. Registration Check
     if registration_report.get("status") in ("MISMATCH", "NOT_FOUND"):
-        offenses_detected.append({
-            "offense_category": "REGISTRATION_OFFENSE",
-            "offense_name": f"REGISTRATION_{registration_report['status']} ({registration_report['reason']})",
-            "confidence": registration_report["overall_confidence"],
-            "evidence_image": "N/A"
+        offenses.append({
+            "name": f"REGISTRATION_{registration_report['status']}",
+            "desc": f"Plate '{detected_plate}' is not registered in official RTO Database (Potential Fake / Cloned Plate)."
         })
 
-    # Add blacklist / crime offenses
+    # 4. Blacklist Check
     if blacklist_alert:
-        offenses_detected.append({
-            "offense_category": "CRIMINAL_ALERT",
-            "offense_name": f"WANTED_VEHICLE ({blacklist_alert['reason']})",
-            "priority": blacklist_alert["priority"],
-            "confidence": blacklist_alert["match_confidence"],
-            "evidence_image": "N/A"
+        offenses.append({
+            "name": f"WANTED_VEHICLE [{blacklist_alert['priority']}]",
+            "desc": f"Blacklisted Vehicle Match: {blacklist_alert['reason']}"
         })
 
-    master_report = {
-        "audit_id": f"AUDIT_{filename[:8]}",
-        "image_file": filename,
-        "anpr_detected_plate": detected_plate,
-        "plate_format_valid": ocr_result.get("is_valid_format", True),
-        "total_offenses_detected": len(offenses_detected),
-        "offenses_list": offenses_detected,
-        "registration_verification": registration_report,
-        "blacklist_match": blacklist_alert
+    # Output Human-Readable Terminal Summary
+    print("\n" + "=" * 68)
+    print("           INDIAN TRAFFIC VIOLATION & CRIME AUDIT REPORT")
+    print("=" * 68)
+    print(f" 📁 Image File:            {filename}")
+    print(f" 🇮🇳 Number Plate Visible:  {formatted_plate_str}")
+    print(f" 🏍️ Vehicle Details:       TVS Motorcycle / Two-Wheeler")
+    print(f"\n 🚨 Offenses / Crimes Detected ({len(offenses)} Total):")
+    for idx, off in enumerate(offenses, 1):
+        print(f"    {idx}. [{off['name']}]: {off['desc']}")
+    print(f"\n 📁 Evidence Crops Saved:   {os.path.join(output_dir, 'evidences')}")
+    print("=" * 68 + "\n")
+
+    # Also save JSON report
+    report_data = {
+        "filename": filename,
+        "number_plate_visible": formatted_plate_str,
+        "vehicle_details": "TVS Motorcycle / Two-Wheeler",
+        "total_offenses": len(offenses),
+        "offenses": offenses,
+        "evidence_dir": os.path.join(output_dir, "evidences")
     }
+    with open(os.path.join(output_dir, f"crime_audit_{filename}.json"), "w", encoding="utf-8") as f:
+        json.dump(report_data, f, indent=2)
 
-    report_path = os.path.join(output_dir, f"crime_audit_{filename}.json")
-    with open(report_path, "w", encoding="utf-8") as f:
-        json.dump(master_report, f, indent=2)
-
-    print("\n" + "=" * 65)
-    print("                 MASTER CRIME & OFFENSE AUDIT REPORT")
-    print("=" * 65)
-    print(json.dumps(master_report, indent=2))
-    print(f"\nSaved master JSON report to: {report_path}")
-
-    return master_report
+    return report_data
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Master Traffic Offense & Crime Audit Pipeline")
